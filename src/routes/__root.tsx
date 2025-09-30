@@ -1,14 +1,14 @@
 /// <reference types="vite/client" />
-import type { ReactNode } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import type { ReactNode } from "react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import {
   Outlet,
   createRootRoute,
   HeadContent,
   Scripts,
-} from "@tanstack/react-router";
-import appCss from "../styles/app.css?url";
+} from "@tanstack/react-router"
+import appCss from "../../app/styles/app.css?url"
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,9 +32,9 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
-});
+})
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 function RootComponent() {
   return (
@@ -44,7 +44,7 @@ function RootComponent() {
       </RootDocument>
       <ReactQueryDevtools></ReactQueryDevtools>
     </QueryClientProvider>
-  );
+  )
 }
 
 function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
@@ -58,5 +58,5 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Scripts />
       </body>
     </html>
-  );
+  )
 }
