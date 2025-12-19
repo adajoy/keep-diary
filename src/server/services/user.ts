@@ -33,3 +33,31 @@ export const addServerUser = createServerFn({ method: "POST" })
       return { message: `Failed to create user: ${error.message}`, code: -1 }
     }
   })
+
+export const loginUser = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      email: z.string().email(),
+      password: z.string().min(1),
+    })
+  )
+  .handler(async ({ data }) => {
+    try {
+      const user = await prismaClient.user.findUnique({
+        where: { email: data.email },
+      })
+
+      if (!user) {
+        return { message: "Invalid email or password", code: -1 }
+      }
+
+      if (user.password !== data.password) {
+        return { message: "Invalid email or password", code: -1 }
+      }
+
+      return { userId: user.id, code: 0 }
+    } catch (error) {
+      console.error("Error during login:", error)
+      return { message: `Failed to login: ${error.message}`, code: -1 }
+    }
+  })

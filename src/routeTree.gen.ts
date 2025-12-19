@@ -10,17 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SigninRouteImport } from './routes/signin'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DiariesRouteImport } from './routes/diaries'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DiariesNewRouteImport } from './routes/diaries.new'
+import { Route as DiariesDiaryIdRouteImport } from './routes/diaries.$diaryId'
 
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const DiariesRoute = DiariesRouteImport.update({
+  id: '/diaries',
+  path: '/diaries',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,34 +30,56 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DiariesNewRoute = DiariesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => DiariesRoute,
+} as any)
+const DiariesDiaryIdRoute = DiariesDiaryIdRouteImport.update({
+  id: '/$diaryId',
+  path: '/$diaryId',
+  getParentRoute: () => DiariesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
+  '/diaries/$diaryId': typeof DiariesDiaryIdRoute
+  '/diaries/new': typeof DiariesNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
+  '/diaries/$diaryId': typeof DiariesDiaryIdRoute
+  '/diaries/new': typeof DiariesNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
+  '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
+  '/diaries/$diaryId': typeof DiariesDiaryIdRoute
+  '/diaries/new': typeof DiariesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/signin'
+  fullPaths: '/' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/signin'
-  id: '__root__' | '/' | '/dashboard' | '/signin'
+  to: '/' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/diaries'
+    | '/signin'
+    | '/diaries/$diaryId'
+    | '/diaries/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
+  DiariesRoute: typeof DiariesRouteWithChildren
   SigninRoute: typeof SigninRoute
 }
 
@@ -68,11 +92,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/diaries': {
+      id: '/diaries'
+      path: '/diaries'
+      fullPath: '/diaries'
+      preLoaderRoute: typeof DiariesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,12 +106,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/diaries/new': {
+      id: '/diaries/new'
+      path: '/new'
+      fullPath: '/diaries/new'
+      preLoaderRoute: typeof DiariesNewRouteImport
+      parentRoute: typeof DiariesRoute
+    }
+    '/diaries/$diaryId': {
+      id: '/diaries/$diaryId'
+      path: '/$diaryId'
+      fullPath: '/diaries/$diaryId'
+      preLoaderRoute: typeof DiariesDiaryIdRouteImport
+      parentRoute: typeof DiariesRoute
+    }
   }
 }
 
+interface DiariesRouteChildren {
+  DiariesDiaryIdRoute: typeof DiariesDiaryIdRoute
+  DiariesNewRoute: typeof DiariesNewRoute
+}
+
+const DiariesRouteChildren: DiariesRouteChildren = {
+  DiariesDiaryIdRoute: DiariesDiaryIdRoute,
+  DiariesNewRoute: DiariesNewRoute,
+}
+
+const DiariesRouteWithChildren =
+  DiariesRoute._addFileChildren(DiariesRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
+  DiariesRoute: DiariesRouteWithChildren,
   SigninRoute: SigninRoute,
 }
 export const routeTree = rootRouteImport
