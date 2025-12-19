@@ -1,13 +1,12 @@
-import { createRouter } from '@tanstack/react-router'
+import { createRouter, Navigate } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
 	const router = createRouter({
 		routeTree,
 		scrollRestoration: true,
-		// Provide a router-level default not-found component so the router
-		// doesn't fall back to the overly generic built-in one.
-		defaultNotFoundComponent: () => <div>Not Found</div>,
+		// Redirect 404s to signin page
+		defaultNotFoundComponent: () => <Navigate to="/signin" replace />,
 	})
 
 	return router

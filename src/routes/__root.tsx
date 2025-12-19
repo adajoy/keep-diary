@@ -7,6 +7,7 @@ import {
   createRootRoute,
   HeadContent,
   Scripts,
+  Navigate,
 } from "@tanstack/react-router"
 import appCss from "../../app/styles/app.css?url"
 
@@ -32,6 +33,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: RootComponent,
+  notFoundComponent: () => <Navigate to="/signin" replace />,
 })
 
 const queryClient = new QueryClient()

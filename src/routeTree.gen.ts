@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as DiariesRouteImport } from './routes/diaries'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as DiariesNewRouteImport } from './routes/diaries.new'
 import { Route as DiariesDiaryIdRouteImport } from './routes/diaries.$diaryId'
 
@@ -23,11 +22,6 @@ const SigninRoute = SigninRouteImport.update({
 const DiariesRoute = DiariesRouteImport.update({
   id: '/diaries',
   path: '/diaries',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiariesNewRoute = DiariesNewRouteImport.update({
@@ -42,14 +36,12 @@ const DiariesDiaryIdRoute = DiariesDiaryIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
   '/diaries/$diaryId': typeof DiariesDiaryIdRoute
   '/diaries/new': typeof DiariesNewRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
   '/diaries/$diaryId': typeof DiariesDiaryIdRoute
@@ -57,7 +49,6 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
   '/diaries/$diaryId': typeof DiariesDiaryIdRoute
@@ -65,20 +56,13 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
+  fullPaths: '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
-  id:
-    | '__root__'
-    | '/'
-    | '/diaries'
-    | '/signin'
-    | '/diaries/$diaryId'
-    | '/diaries/new'
+  to: '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
+  id: '__root__' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   DiariesRoute: typeof DiariesRouteWithChildren
   SigninRoute: typeof SigninRoute
 }
@@ -97,13 +81,6 @@ declare module '@tanstack/react-router' {
       path: '/diaries'
       fullPath: '/diaries'
       preLoaderRoute: typeof DiariesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diaries/new': {
@@ -137,7 +114,6 @@ const DiariesRouteWithChildren =
   DiariesRoute._addFileChildren(DiariesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   DiariesRoute: DiariesRouteWithChildren,
   SigninRoute: SigninRoute,
 }
