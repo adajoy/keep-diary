@@ -13,7 +13,7 @@ function Home() {
   const createEntry = useServerFn(createDiaryEntry)
   const createEntryMutation = useMutation({
     mutationKey: ["createEntry"],
-    mutationFn: () => createEntry(),
+    mutationFn: createEntry,
   })
 
   const getUsers = useServerFn(getServerUsers)
@@ -33,7 +33,14 @@ function Home() {
   return (
     <div>
       {JSON.stringify(data)}
-      <Button type="button" onClick={() => createEntryMutation.mutate()}>
+      <Button
+        type="button"
+        onClick={() =>
+          createEntryMutation.mutate({
+            data: { userId: "cmjcexbwf0000it6od46wcbyu", content: "test" },
+          })
+        }
+      >
         createDiaryEntry
       </Button>
       <Button
