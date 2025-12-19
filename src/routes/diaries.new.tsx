@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft } from "lucide-react"
 import { useState, useEffect } from "react"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
 export const Route = createFileRoute("/diaries/new")({
   component: NewDiaryPage,
@@ -81,15 +82,18 @@ function NewDiaryPage() {
     <div className="min-h-screen">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.navigate({ to: "/diaries" })}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.navigate({ to: "/diaries" })}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+          </div>
         </div>
       </header>
       <main className="container mx-auto px-4 py-8">

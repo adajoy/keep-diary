@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as DiariesRouteImport } from './routes/diaries'
+import { Route as ChartsRouteImport } from './routes/charts'
 import { Route as DiariesNewRouteImport } from './routes/diaries.new'
 import { Route as DiariesDiaryIdRouteImport } from './routes/diaries.$diaryId'
 
@@ -22,6 +23,11 @@ const SigninRoute = SigninRouteImport.update({
 const DiariesRoute = DiariesRouteImport.update({
   id: '/diaries',
   path: '/diaries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChartsRoute = ChartsRouteImport.update({
+  id: '/charts',
+  path: '/charts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DiariesNewRoute = DiariesNewRouteImport.update({
@@ -36,12 +42,14 @@ const DiariesDiaryIdRoute = DiariesDiaryIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/charts': typeof ChartsRoute
   '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
   '/diaries/$diaryId': typeof DiariesDiaryIdRoute
   '/diaries/new': typeof DiariesNewRoute
 }
 export interface FileRoutesByTo {
+  '/charts': typeof ChartsRoute
   '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
   '/diaries/$diaryId': typeof DiariesDiaryIdRoute
@@ -49,6 +57,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/charts': typeof ChartsRoute
   '/diaries': typeof DiariesRouteWithChildren
   '/signin': typeof SigninRoute
   '/diaries/$diaryId': typeof DiariesDiaryIdRoute
@@ -56,13 +65,25 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
+  fullPaths:
+    | '/charts'
+    | '/diaries'
+    | '/signin'
+    | '/diaries/$diaryId'
+    | '/diaries/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
-  id: '__root__' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
+  to: '/charts' | '/diaries' | '/signin' | '/diaries/$diaryId' | '/diaries/new'
+  id:
+    | '__root__'
+    | '/charts'
+    | '/diaries'
+    | '/signin'
+    | '/diaries/$diaryId'
+    | '/diaries/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  ChartsRoute: typeof ChartsRoute
   DiariesRoute: typeof DiariesRouteWithChildren
   SigninRoute: typeof SigninRoute
 }
@@ -81,6 +102,13 @@ declare module '@tanstack/react-router' {
       path: '/diaries'
       fullPath: '/diaries'
       preLoaderRoute: typeof DiariesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/charts': {
+      id: '/charts'
+      path: '/charts'
+      fullPath: '/charts'
+      preLoaderRoute: typeof ChartsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/diaries/new': {
@@ -114,6 +142,7 @@ const DiariesRouteWithChildren =
   DiariesRoute._addFileChildren(DiariesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  ChartsRoute: ChartsRoute,
   DiariesRoute: DiariesRouteWithChildren,
   SigninRoute: SigninRoute,
 }

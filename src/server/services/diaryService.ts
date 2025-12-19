@@ -120,3 +120,49 @@ export const deleteDiary = createServerFn({ method: "POST" })
       return { message: `Failed to delete diary: ${error.message}`, code: -1 }
     }
   })
+
+export const getDailyWordCounts = createServerFn({ method: "GET" })
+  .inputValidator(
+    z.object({
+      userId: z.string(),
+    })
+  )
+  .handler(async ({ data }) => {
+    try {
+      const diaries = await prismaClient.diary.findMany({
+        where: { userId: data.userId },
+        select: {
+          content: true,
+          createdAt: true,
+        },
+      })
+
+      // Group by date and count words
+      const dailyCounts: Record<string, number> = {}
+      
+      diaries.forEach((diary) => {
+        const date = new Date(diary.createdAt)
+        const dateKey = date.toISOString().split("T")[0] // YYYY-MM-DD format
+        const wordCount = diary.content.trim().split(/\s+/).filter(word => word.length > 0).length
+        
+        if (dailyCounts[dateKey]) {
+          dailyCounts[dateKey] += wordCount
+        } else {
+          dailyCounts[dateKey] = wordCount
+        }
+      })
+
+      // Convert to array format for charting
+      const chartData = Object.entries(dailyCounts)
+        .map(([date, count]) => ({
+          date,
+          words: count,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date))
+
+      return { data: chartData, code: 0 }
+    } catch (error) {
+      console.error("Error fetching daily word counts:", error)
+      return { message: `Failed to fetch word counts: ${error.message}`, code: -1 }
+    }
+  })

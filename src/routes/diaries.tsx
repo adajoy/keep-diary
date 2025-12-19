@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { AppLayout } from "@/components/app-layout"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
 export const Route = createFileRoute("/diaries")({
   component: DiariesPage,
@@ -96,24 +98,28 @@ function DiariesPage() {
   const diaries = data?.code === 0 ? data.data : []
 
   return (
-    <div className="min-h-screen">
-      {isExactMatch ? (
-        <>
-          <header className="border-b">
-            <div className="container mx-auto px-4 py-4">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">My Diaries</h1>
-                <Button
-                  onClick={() => router.navigate({ to: "/diaries/new" })}
-                  className="gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add New Diary
-                </Button>
+    <AppLayout>
+      <div className="min-h-screen">
+        {isExactMatch ? (
+          <>
+            <header className="border-b">
+              <div className="container mx-auto px-4 py-4">
+                <div className="flex items-center gap-4">
+                  <SidebarTrigger />
+                  <div className="flex items-center justify-between flex-1">
+                    <h1 className="text-2xl font-bold">My Diaries</h1>
+                    <Button
+                      onClick={() => router.navigate({ to: "/diaries/new" })}
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add New Diary
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </header>
-          <main className="container mx-auto px-4 py-8">
+            </header>
+            <main className="container mx-auto px-4 py-8">
             {isLoading && (
               <div className="text-center py-8 text-muted-foreground">
                 Loading diaries...
@@ -200,6 +206,7 @@ function DiariesPage() {
       ) : (
         <Outlet />
       )}
-    </div>
+      </div>
+    </AppLayout>
   )
 }

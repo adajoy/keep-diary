@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { ArrowLeft, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
 export const Route = createFileRoute("/diaries/$diaryId")({
   component: DiaryDetailPage,
@@ -92,25 +93,28 @@ function DiaryDetailPage() {
     <div className="min-h-screen">
       <header className="border-b">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.navigate({ to: "/diaries" })}
-              className="gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setDeleteDialogOpen(true)}
-              className="gap-2"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </Button>
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <div className="flex items-center justify-between flex-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.navigate({ to: "/diaries" })}
+                className="gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setDeleteDialogOpen(true)}
+                className="gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </Button>
+            </div>
           </div>
         </div>
       </header>
