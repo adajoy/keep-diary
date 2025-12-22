@@ -29,9 +29,7 @@ export function LoginForm({
     mutationKey: ["login"],
     mutationFn: (data: { email: string; password: string }) => login({ data }),
     onSuccess: (result: any) => {
-      if (result.code === 0 && result.userId) {
-        // Store userId and email in localStorage for now (in production, use proper session management)
-        localStorage.setItem("userId", result.userId)
+      if (result.code === 0) {
         localStorage.setItem("userEmail", email)
         navigate({
           to: "/diaries",

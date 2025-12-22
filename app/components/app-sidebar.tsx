@@ -31,10 +31,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   React.useEffect(() => {
     setIsClient(true)
     // Get user info from localStorage
-    const userId = localStorage.getItem("userId")
     const userEmail = localStorage.getItem("userEmail")
-    
-    if (userId && userEmail) {
+
+    if (userEmail) {
       setUser({
         name: userEmail.split("@")[0],
         email: userEmail,

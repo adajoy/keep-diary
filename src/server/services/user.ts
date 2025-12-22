@@ -1,6 +1,8 @@
 import { z } from "zod"
 import { createServerFn } from "@tanstack/react-start"
 import prismaClient from "../prismaClient"
+import { generateToken } from "../utils/jwt"
+import { deleteCookie, setCookie } from "@tanstack/react-start/server"
 
 export const getServerUsers = createServerFn({ method: "GET" }).handler(
   async () => {
@@ -55,9 +57,25 @@ export const loginUser = createServerFn({ method: "POST" })
         return { message: "Invalid email or password", code: -1 }
       }
 
-      return { userId: user.id, code: 0 }
+      const token = await generateToken({ userId: user.id })
+      setCookie("auth", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+      })
+
+      return { code: 0 }
     } catch (error) {
       console.error("Error during login:", error)
       return { message: `Failed to login: ${error.message}`, code: -1 }
     }
   })
+
+export const signoutUser = createServerFn({ method: "POST" }).handler(
+  async () => {
+    deleteCookie("auth")
+    return { code: 0 }
+  }
+)

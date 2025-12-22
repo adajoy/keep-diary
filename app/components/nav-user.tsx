@@ -1,6 +1,9 @@
 import { LogOut } from "lucide-react"
 import { useRouter } from "@tanstack/react-router"
 import { Button } from "@/components/ui/button"
+import { signoutUser } from "../../src/server/services/user"
+import { useServerFn } from "@tanstack/react-start"
+import { useMutation } from "@tanstack/react-query"
 
 export function NavUser({
   user,
@@ -12,11 +15,18 @@ export function NavUser({
   }
 }) {
   const router = useRouter()
+  const signout = useServerFn(signoutUser)
+  const signoutMutation = useMutation({
+    mutationKey: ["signout"],
+    mutationFn: () => signout({}),
+    onSuccess: () => {
+      localStorage.removeItem("userEmail")
+      router.navigate({ to: "/signin" })
+    },
+  })
 
   const handleSignOut = () => {
-    localStorage.removeItem("userId")
-    localStorage.removeItem("userEmail")
-    router.navigate({ to: "/signin" })
+    signoutMutation.mutate()
   }
 
   return (

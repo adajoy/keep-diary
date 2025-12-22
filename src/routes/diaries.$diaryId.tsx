@@ -30,31 +30,24 @@ function DiaryDetailPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { diaryId } = Route.useParams()
-  const [userId, setUserId] = useState<string | null>(null)
   const [isClient, setIsClient] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   useEffect(() => {
     setIsClient(true)
-    const storedUserId = localStorage.getItem("userId")
-    setUserId(storedUserId)
-    if (!storedUserId) {
-      router.navigate({ to: "/signin" })
-    }
   }, [router])
 
   const getDiary = useServerFn(getDiaryDetail)
   const { data, isLoading, error } = useQuery({
     queryKey: ["getDiaryDetail", diaryId],
     queryFn: () => getDiary({ data: { diaryId } }),
-    enabled: !!userId,
+    enabled: isClient,
   })
 
   const deleteDiaryFn = useServerFn(deleteDiary)
   const deleteMutation = useMutation({
     mutationKey: ["deleteDiary"],
-    mutationFn: (data: { diaryId: string; userId: string }) =>
-      deleteDiaryFn({ data }),
+    mutationFn: (data: { diaryId: string }) => deleteDiaryFn({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getUserDiaries"] })
       router.navigate({ to: "/diaries" })
@@ -62,12 +55,10 @@ function DiaryDetailPage() {
   })
 
   const handleDelete = () => {
-    if (userId) {
-      deleteMutation.mutate({ diaryId, userId })
-    }
+    deleteMutation.mutate({ diaryId })
   }
 
-  if (!isClient || !userId) {
+  if (!isClient) {
     return null
   }
 

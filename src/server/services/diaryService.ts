@@ -2,17 +2,19 @@ import { createServerFn } from "@tanstack/react-start"
 
 import prismaClient from "../prismaClient"
 import { z } from "zod"
+import { requireUser } from "../utils/requireUser"
 
 export const createDiaryEntry = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
-      userId: z.string(),
       title: z.string().optional(),
       content: z.string(),
     })
   )
   .handler(async ({ data }) => {
-    const { userId, title, content } = data
+    const _user = await requireUser()
+    const userId = _user.payload.userId
+    const { title, content } = data
     // validate user exists
     const user = await prismaClient.user.findUnique({
       where: { id: userId },
@@ -30,16 +32,13 @@ export const createDiaryEntry = createServerFn({ method: "POST" })
     return entry
   })
 
-export const getUserDiaries = createServerFn({ method: "GET" })
-  .inputValidator(
-    z.object({
-      userId: z.string(),
-    })
-  )
-  .handler(async ({ data }) => {
+export const getUserDiaries = createServerFn({ method: "GET" }).handler(
+  async () => {
     try {
+      const _user = await requireUser()
+      const userId = _user.payload.userId
       const diaries = await prismaClient.diary.findMany({
-        where: { userId: data.userId },
+        where: { userId },
         orderBy: { createdAt: "desc" },
         select: {
           id: true,
@@ -54,7 +53,8 @@ export const getUserDiaries = createServerFn({ method: "GET" })
       console.error("Error fetching diaries:", error)
       return { message: `Failed to fetch diaries: ${error.message}`, code: -1 }
     }
-  })
+  }
+)
 
 export const getDiaryDetail = createServerFn({ method: "GET" })
   .inputValidator(
@@ -64,6 +64,8 @@ export const getDiaryDetail = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }) => {
     try {
+      const _user = await requireUser()
+      const userId = _user.payload.userId
       const diary = await prismaClient.diary.findUnique({
         where: { id: data.diaryId },
         select: {
@@ -80,6 +82,10 @@ export const getDiaryDetail = createServerFn({ method: "GET" })
         return { message: "Diary not found", code: -1 }
       }
 
+      if (diary.userId !== userId) {
+        return { message: "Unauthorized", code: -1 }
+      }
+
       return { data: diary, code: 0 }
     } catch (error) {
       console.error("Error fetching diary:", error)
@@ -91,11 +97,12 @@ export const deleteDiary = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       diaryId: z.string(),
-      userId: z.string(),
     })
   )
   .handler(async ({ data }) => {
     try {
+      const _user = await requireUser()
+      const userId = _user.payload.userId
       // First verify the diary exists and belongs to the user
       const diary = await prismaClient.diary.findUnique({
         where: { id: data.diaryId },
@@ -106,7 +113,7 @@ export const deleteDiary = createServerFn({ method: "POST" })
         return { message: "Diary not found", code: -1 }
       }
 
-      if (diary.userId !== data.userId) {
+      if (diary.userId !== userId) {
         return { message: "Unauthorized", code: -1 }
       }
 
@@ -121,16 +128,13 @@ export const deleteDiary = createServerFn({ method: "POST" })
     }
   })
 
-export const getDailyWordCounts = createServerFn({ method: "GET" })
-  .inputValidator(
-    z.object({
-      userId: z.string(),
-    })
-  )
-  .handler(async ({ data }) => {
+export const getDailyWordCounts = createServerFn({ method: "GET" }).handler(
+  async () => {
     try {
+      const _user = await requireUser()
+      const userId = _user.payload.userId
       const diaries = await prismaClient.diary.findMany({
-        where: { userId: data.userId },
+        where: { userId },
         select: {
           content: true,
           createdAt: true,
@@ -139,12 +143,15 @@ export const getDailyWordCounts = createServerFn({ method: "GET" })
 
       // Group by date and count words
       const dailyCounts: Record<string, number> = {}
-      
+
       diaries.forEach((diary) => {
         const date = new Date(diary.createdAt)
         const dateKey = date.toISOString().split("T")[0] // YYYY-MM-DD format
-        const wordCount = diary.content.trim().split(/\s+/).filter(word => word.length > 0).length
-        
+        const wordCount = diary.content
+          .trim()
+          .split(/\s+/)
+          .filter((word) => word.length > 0).length
+
         if (dailyCounts[dateKey]) {
           dailyCounts[dateKey] += wordCount
         } else {
@@ -163,6 +170,10 @@ export const getDailyWordCounts = createServerFn({ method: "GET" })
       return { data: chartData, code: 0 }
     } catch (error) {
       console.error("Error fetching daily word counts:", error)
-      return { message: `Failed to fetch word counts: ${error.message}`, code: -1 }
+      return {
+        message: `Failed to fetch word counts: ${error.message}`,
+        code: -1,
+      }
     }
-  })
+  }
+)

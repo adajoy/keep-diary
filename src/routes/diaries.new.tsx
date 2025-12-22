@@ -24,7 +24,6 @@ export const Route = createFileRoute("/diaries/new")({
 function NewDiaryPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const [userId, setUserId] = useState<string | null>(null)
   const [isClient, setIsClient] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -32,17 +31,12 @@ function NewDiaryPage() {
 
   useEffect(() => {
     setIsClient(true)
-    const storedUserId = localStorage.getItem("userId")
-    setUserId(storedUserId)
-    if (!storedUserId) {
-      router.navigate({ to: "/signin" })
-    }
   }, [router])
 
   const createDiary = useServerFn(createDiaryEntry)
   const createMutation = useMutation({
     mutationKey: ["createDiary"],
-    mutationFn: (data: { userId: string; title?: string; content: string }) =>
+    mutationFn: (data: { title?: string; content: string }) =>
       createDiary({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getUserDiaries"] })
@@ -62,19 +56,13 @@ function NewDiaryPage() {
       return
     }
 
-    if (!userId) {
-      setError("User not authenticated")
-      return
-    }
-
     createMutation.mutate({
-      userId,
       title: title.trim() || undefined,
       content: content.trim(),
     })
   }
 
-  if (!isClient || !userId) {
+  if (!isClient) {
     return null
   }
 
