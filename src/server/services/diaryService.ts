@@ -12,8 +12,9 @@ export const createDiaryEntry = createServerFn({ method: "POST" })
     })
   )
   .handler(async ({ data }) => {
-    const _user = await requireUser()
-    const userId = _user.payload.userId
+    const {
+      payload: { userId },
+    } = await requireUser()
     const { title, content } = data
     // validate user exists
     const user = await prismaClient.user.findUnique({
@@ -35,8 +36,9 @@ export const createDiaryEntry = createServerFn({ method: "POST" })
 export const getUserDiaries = createServerFn({ method: "GET" }).handler(
   async () => {
     try {
-      const _user = await requireUser()
-      const userId = _user.payload.userId
+      const {
+        payload: { userId },
+      } = await requireUser()
       const diaries = await prismaClient.diary.findMany({
         where: { userId },
         orderBy: { createdAt: "desc" },
@@ -64,8 +66,9 @@ export const getDiaryDetail = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }) => {
     try {
-      const _user = await requireUser()
-      const userId = _user.payload.userId
+      const {
+        payload: { userId },
+      } = await requireUser()
       const diary = await prismaClient.diary.findUnique({
         where: { id: data.diaryId },
         select: {
@@ -101,8 +104,9 @@ export const deleteDiary = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     try {
-      const _user = await requireUser()
-      const userId = _user.payload.userId
+      const {
+        payload: { userId },
+      } = await requireUser()
       // First verify the diary exists and belongs to the user
       const diary = await prismaClient.diary.findUnique({
         where: { id: data.diaryId },
@@ -131,8 +135,9 @@ export const deleteDiary = createServerFn({ method: "POST" })
 export const getDailyWordCounts = createServerFn({ method: "GET" }).handler(
   async () => {
     try {
-      const _user = await requireUser()
-      const userId = _user.payload.userId
+      const {
+        payload: { userId },
+      } = await requireUser()
       const diaries = await prismaClient.diary.findMany({
         where: { userId },
         select: {
